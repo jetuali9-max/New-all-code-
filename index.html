@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0e1014">
+  <meta name="description" content="Learn HTML, CSS, JavaScript and Python with Learn 🖍️">
+  <title>Learn 🖍️ — Coding Learning App</title>
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="style-1.css">
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+
+  <style>
+    /* Small structural styles needed by the existing JS/CSS */
+    .app-shell{width:100%;min-height:100vh;}
+    .main-content{width:100%;}
+    .view .container > h2{font-size:24px;margin-bottom:8px;}
+    .clock{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;}
+    .gate-card .gate-logo{font-size:40px;margin-bottom:8px;}
+    #promoGate{display:flex;}
+    .hidden{display:none!important;}
+  </style>
+</head>
+
+<body>
+  <!-- Promo gate -->
+  <div id="promoGate" aria-label="Promo code gate">
+    <div class="gate-card">
+      <div class="gate-glyph">🖍️</div>
+      <h1>Learn 🖍️</h1>
+      <p class="sub">Enter your promo code to open the coding app.</p>
+      <input id="gateInput" class="gate-input" type="text" autocomplete="off"
+             autocapitalize="characters" placeholder="PROMO CODE" aria-label="Promo code">
+      <button id="gateBtn" class="gate-btn" type="button">Enter</button>
+      <div id="gateError" class="gate-error" role="alert"></div>
+      <div class="gate-note">This app runs in your browser. Your progress and editor code are saved locally on this device.</div>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="dot"></span>
+        <span>Learn 🖍️</span>
+      </div>
+
+      <div class="topbar-right">
+        <span id="clock" class="clock" aria-label="Current time">--:-- --</span>
+        <span id="levelChip" class="level-chip">🌱 Lv.1 Beginner</span>
+        <button id="hamBtn" class="hamburger" type="button" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Kip / Bird bar -->
+    <section class="bird-bar" aria-label="Kip assistant">
+      <button id="birdTapArea" class="bird-tap" type="button">
+        <span id="birdAvatar" class="bird-avatar">🐦</span>
+        <span id="birdText" class="bird-text"><span class="bn">হাই! আমি কিপ 🐦 চলো একসাথে কোড শিখি!</span></span>
+      </button>
+      <button id="birdMute" class="bird-mute" type="button" aria-label="Toggle Kip voice">🔈</button>
+    </section>
+
+    <!-- Side menu -->
+    <div id="navScrim" class="nav-scrim"></div>
+    <aside id="navDrawer" class="nav-drawer" aria-label="Main menu">
+      <h4>Menu</h4>
+
+      <button class="nav-item active" data-view="home" type="button">
+        <span class="ic">🏠</span>
+        <span>Home</span>
+      </button>
+
+      <button class="nav-item" data-view="editor" type="button">
+        <span class="ic">🖍️</span>
+        <span>Learn 🖍️</span>
+        <span class="badge">Code + Preview</span>
+      </button>
+
+      <h4>Suggestions Code 💭</h4>
+
+      <button class="nav-item" data-view="html" type="button">
+        <span class="ic">🌐</span>
+        <span>HTML Code Library</span>
+        <span id="navHtmlPct" class="badge">0%</span>
+      </button>
+
+      <button class="nav-item" data-view="css" type="button">
+        <span class="ic">🎨</span>
+        <span>CSS Code Library</span>
+        <span id="navCssPct" class="badge">0%</span>
+      </button>
+
+      <button class="nav-item" data-view="js" type="button">
+        <span class="ic">⚡</span>
+        <span>JavaScript Code Library</span>
+        <span id="navJsPct" class="badge">0%</span>
+      </button>
+
+      <button class="nav-item" data-view="python" type="button">
+        <span class="ic">🐍</span>
+        <span>Python Code Library</span>
+        <span id="navPyPct" class="badge">0%</span>
+      </button>
+
+      <h4>Progress</h4>
+
+      <button class="nav-item" data-view="progress" type="button">
+        <span class="ic">📊</span>
+        <span>My Progress</span>
+      </button>
+
+      <h4>Support 🛃</h4>
+
+      <button id="settingsNavItem" class="nav-item" data-view="settings" type="button">
+        <span class="ic">🛃</span>
+        <span>Contact Support</span>
+      </button>
+    </aside>
+
+    <main class="main-content">
+      <!-- HOME -->
+      <section id="view-home" class="view show">
+        <div class="hero">
+          <h1>Learn coding by doing.</h1>
+          <p class="lede">Pick a language, study complete examples, then open the coding workspace and experiment with your own code.</p>
+
+          <div id="homeLangGrid" class="lang-grid"></div>
+        </div>
+      </section>
+
+      <!-- EDITOR / LEARN -->
+      <section id="view-editor" class="view">
+        <div class="container">
+          <div class="hero" style="padding-left:0;padding-right:0;">
+            <h1>Learn 🖍️</h1>
+            <p class="lede">Write code on one side and see the result live on the other.</p>
+          </div>
+        </div>
+
+        <div id="editorLangSelect" class="editor-toolbar">
+          <div class="lang-select">
+            <button type="button" data-lang="html" class="active">HTML</button>
+            <button type="button" data-lang="css">CSS</button>
+            <button type="button" data-lang="js">JS</button>
+            <button type="button" data-lang="python">Python</button>
+          </div>
+        </div>
+
+        <div class="tool-row">
+          <button id="swapBtn" class="tool-btn" type="button">⇄ Swap</button>
+          <button id="resetBtn" class="tool-btn" type="button">↺ Reset</button>
+          <button id="copyEditorBtn" class="tool-btn" type="button">⧉ Copy</button>
+          <button id="clearBtn" class="tool-btn" type="button">⌫ Clear</button>
+          <button id="runBtn" class="tool-btn run" type="button">▶ Run</button>
+        </div>
+
+        <div class="editor-stage">
+          <div id="splitWrap" class="split">
+            <section id="paneEditor" class="pane">
+              <div class="pane-head">
+                <span>HTML Code Editor</span>
+                <span id="paneEditorTag">HTML</span>
+              </div>
+              <textarea id="cmHost" aria-label="Code editor"></textarea>
+            </section>
+
+            <div id="resizer" class="resizer" role="separator" aria-label="Resize editor and preview"></div>
+
+            <section id="panePreview" class="pane">
+              <div class="pane-head">
+                <span>Live Preview</span>
+                <button id="resetSizeBtn" class="reset-size-btn" type="button">Reset size</button>
+              </div>
+              <div id="previewBody" class="preview-body">
+                <iframe id="previewFrame" title="Live code preview" sandbox="allow-scripts"></iframe>
+              </div>
+              <pre id="pyConsole" class="py-console" style="display:none;"></pre>
+              <div id="errBanner" class="err-banner" role="alert"></div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- LANGUAGE LIBRARIES -->
+      <section id="view-html" class="view">
+        <div class="container"></div>
+      </section>
+
+      <section id="view-css" class="view">
+        <div class="container"></div>
+      </section>
+
+      <section id="view-js" class="view">
+        <div class="container"></div>
+      </section>
+
+      <section id="view-python" class="view">
+        <div class="container"></div>
+      </section>
+
+      <!-- PROGRESS -->
+      <section id="view-progress" class="view">
+        <div class="container">
+          <div class="hero" style="padding-left:0;padding-right:0;">
+            <h1>My Progress 📊</h1>
+            <p class="lede">Track what you have opened, practiced and learned.</p>
+          </div>
+          <div id="overallStatGrid" class="stat-grid"></div>
+          <div id="progressTables"></div>
+        </div>
+      </section>
+
+      <!-- SETTINGS / SUPPORT -->
+      <section id="view-settings" class="view">
+        <div id="settingsArea" class="auth-wrap"></div>
+      </section>
+    </main>
+
+    <!-- Kip progress panel -->
+    <div id="birdScrim" class="nav-scrim" style="z-index:75;">
+      <div id="birdPanel" class="auth-wrap" style="position:absolute;right:0;top:0;height:100%;max-width:360px;width:88vw;background:var(--bg-elev);padding-top:22px;overflow-y:auto;">
+        <div class="auth-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <h3>Kip's Progress 🐦</h3>
+            <button id="birdClose" class="tool-btn" type="button">✕</button>
+          </div>
+          <div id="birdPanelBody" style="margin-top:18px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav" aria-label="Bottom navigation">
+      <button type="button" data-view="home" class="active">
+        <span class="ic">🏠</span><span>Home</span>
+      </button>
+      <button type="button" data-view="editor">
+        <span class="ic">🖍️</span><span>Learn</span>
+      </button>
+      <button type="button" data-view="progress">
+        <span class="ic">📊</span><span>Progress</span>
+      </button>
+      <button type="button" data-view="settings">
+        <span class="ic">🛃</span><span>Support</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- CodeMirror core -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+
+  <!-- CodeMirror modes -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+
+  <!-- CodeMirror addons used by script-1.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+
+  <!-- App scripts: bird.js MUST load before script-1.js -->
+  <script src="bird.js"></script>
+  <script src="script-1.js"></script>
+
+  <!-- 12-hour clock -->
+  <script>
+    (function () {
+      const clock = document.getElementById('clock');
+      function updateClock() {
+        const now = new Date();
+        clock.textContent = now.toLocaleTimeString([], {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+    })();
+  </script>
+
+  <!-- Keep hamburger aria state in sync -->
+  <script>
+    (function () {
+      const btn = document.getElementById('hamBtn');
+      const drawer = document.getElementById('navDrawer');
+      if (!btn || !drawer) return;
+      const observer = new MutationObserver(() => {
+        btn.setAttribute('aria-expanded', drawer.classList.contains('show') ? 'true' : 'false');
+      });
+      observer.observe(drawer, { attributes: true, attributeFilter: ['class'] });
+    })();
+  </script>
+</body>
+</html>
